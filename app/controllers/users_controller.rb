@@ -1,17 +1,9 @@
 class UsersController < ApplicationController
   before_action :authenticate, :except => [:create, :token]
 
-  # GET /users
-  # GET /users.json
-  def index
-    @users = User.all
-    render json: @users
-  end
-
   # GET /users/1
   # GET /users/1.json
   def show
-    @user = User.find(params[:id])
     render json: @user
   end
 
