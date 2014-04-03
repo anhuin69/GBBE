@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_many :storages
 
   before_validation :initialize_defaults
   before_save :encrypt_password

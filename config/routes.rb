@@ -1,4 +1,5 @@
 Gatherbox::Application.routes.draw do
+  resources :items, except: [:new, :edit]
   resources :storages, except: [:new, :edit]
   resources :users, except: [:new, :edit]
 

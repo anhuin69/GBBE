@@ -11,6 +11,8 @@ class CreateStorages < ActiveRecord::Migration
       t.integer :quota_bytes_total, :limit => 8
       t.integer :quota_bytes_used, :limit => 8
       t.text :etag
+      t.text :uid
+      t.text :picture_url
 
       t.timestamps
     end

@@ -11,7 +11,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140403143011) do
+ActiveRecord::Schema.define(version: 20140403152110) do
+
+  create_table "items", force: true do |t|
+    t.integer  "storage_id"
+    t.string   "parent_remote_id"
+    t.string   "remote_id"
+    t.text     "remote_link"
+    t.text     "title"
+    t.text     "mimeType"
+    t.text     "description"
+    t.datetime "createdDate"
+    t.datetime "modifiedDate"
+    t.integer  "userPermission"
+    t.integer  "fileSize",         limit: 8
+    t.text     "etag"
+    t.text     "md5checksum"
+    t.text     "iconLink"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "items", ["parent_remote_id"], name: "index_items_on_parent_remote_id", using: :btree
+  add_index "items", ["remote_id"], name: "index_items_on_remote_id", using: :btree
+  add_index "items", ["storage_id"], name: "index_items_on_storage_id", using: :btree
 
   create_table "storages", force: true do |t|
     t.integer  "user_id"
@@ -24,6 +47,8 @@ ActiveRecord::Schema.define(version: 20140403143011) do
     t.integer  "quota_bytes_total", limit: 8
     t.integer  "quota_bytes_used",  limit: 8
     t.text     "etag"
+    t.text     "uid"
+    t.text     "picture_url"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
