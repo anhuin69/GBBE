@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="1938048495">
+    <data-source source="LOCAL" name="Rails backend: development" uuid="5f471f5f-af29-42a8-94fb-48bc7ac3693d">
+      <driver-ref>mysql</driver-ref>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://127.0.0.1/gatherbox_dev</jdbc-url>
+      <user-name>gatherbox</user-name>
+      <user-password>dfdddfcbdfd8dfcedfcfdfc4df9fdf9a</user-password>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="Rails backend: test" uuid="dc729b76-c31d-4c71-a8ce-9638a0925087">
+      <driver-ref>mysql</driver-ref>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://127.0.0.1/gatherbox_test</jdbc-url>
+      <user-name>gatherbox</user-name>
+      <user-password>dfdddfcbdfd8dfcedfcfdfc4df9fdf9a</user-password>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="Rails backend: production" uuid="84851e93-daa5-4cdc-b5db-d59f514bad32">
+      <driver-ref>mysql</driver-ref>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://127.0.0.1/gatherbox_prod</jdbc-url>
+      <user-name>gatherbox</user-name>
+      <user-password>dfdddfcbdfd8dfcedfcfdfc4df9fdf9a</user-password>
+      <libraries />
+    </data-source>
+  </component>
+</project>
+
