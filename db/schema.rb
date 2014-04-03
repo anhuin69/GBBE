@@ -11,7 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140402155437) do
+ActiveRecord::Schema.define(version: 20140403143011) do
+
+  create_table "storages", force: true do |t|
+    t.integer  "user_id"
+    t.string   "provider"
+    t.string   "token"
+    t.string   "login"
+    t.string   "password"
+    t.string   "url"
+    t.integer  "port"
+    t.integer  "quota_bytes_total", limit: 8
+    t.integer  "quota_bytes_used",  limit: 8
+    t.text     "etag"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "storages", ["user_id"], name: "index_storages_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "username"

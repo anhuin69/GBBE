@@ -1,4 +1,5 @@
 Gatherbox::Application.routes.draw do
+  resources :storages, except: [:new, :edit]
   resources :users, except: [:new, :edit]
 
   post '/token' => 'users#token'
