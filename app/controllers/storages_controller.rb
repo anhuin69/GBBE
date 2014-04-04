@@ -1,3 +1,6 @@
+require 'api/api_controller'
+require 'api/google_drive_controller'
+
 class StoragesController < ApplicationController
   before_action :authenticate
   before_action :set_storage, only: [:show, :update, :destroy, :changes]
@@ -32,76 +35,44 @@ class StoragesController < ApplicationController
 
   # Get remote changes
   def changes
-    #ctrl = ApiController.get_controller(@storage, session)
-    #ctrl.authenticate
-    #ctrl.load_account_infos
-    show
+    ctrl = ApiController.get_controller(@storage)
+    new_infos = ctrl.get_account_infos
+    if (new_infos[:code] == 200)
+      @storage.login = new_infos[:login]
+      @storage.picture_url = new_infos[:picture_url]
+      @storage.quota_bytes_total = new_infos[:quota_bytes_total]
+      @storage.quota_bytes_used = new_infos[:quota_bytes_used]
+      @storage.uid = new_infos[:root_folder_id]
+      show if @storage.save
+      return
+    end
+    render json: {error: "impossible to update storage informations"}, status: :internal_server_error
   end
 
   # POST /storages
   # POST /storages.json
   def create
     @storage = @user.storages.new(storage_params)
-    ctrl = ApiController.get_controller(@storage, session)
-    unless ctrl.nil?
-      link = ctrl.link_account
-      redirect_to link.to_s
-      return
+    controller = ApiController.get_controller(@storage)
+    unless controller.nil? || (url = controller.get_authorization_url).nil?
+      render json: {url: url}
+    else
+      render json: {error: "unknown provider"}, status: :internal_server_error
     end
   end
 
-  # Callback called by google API when a user links a Google Drive
-  def callback_link_account_google_oauth2
-    if (params['code'].nil?)
-      error = params['error']
-      redirect_to authenticated_root_path, :alert => "Google Drive: #{error}"
-    else
-      code = params[:code]
-      @storage = @user.storages.new
-      @storage.provider = Gatherbox::Application.config.GoogleDrive[:PROVIDER]
-      @storage.token = code
-      ctrl = GoogleDriveController.new(@storage)
-      ctrl.authenticate
-      ctrl.load_account_infos
-
-      unless (@user.storages.where(:uid => @storage.uid).length == 1)
-        @storage.destroy
-        redirect_to authenticated_root_path, :alert => "Google Drive: This drive has already been added"
-        return
+  # Callback from provider
+  def link_account
+    if (params.key?(:code))
+      @storage = @user.storages.new(:provider => "google_drive") #TODO: change that to manage all drive in uniformly
+      controller = ApiController.get_controller(@storage)
+      if !controller.nil? && controller.authorize(params[:code]) && @storage.save
+        show
+      else
+        render json: {error: "invalid authorization code"}, status: :unprocessable_entity
       end
-
-      #create uninitialized root folder
-      root_item = @storage.items.new(:remote_id => "root", :parent_remote_id => nil, :mimeType => "folder")
-      root_item.save
-      redirect_to authenticated_root_path
-    end
-  end
-
-  # Callback called by dropbox API when a user links a Dropbox account
-  def callback_link_account_dropbox_oauth2
-    if (params['code'].nil?)
-      error = params['error']
-      error_description = params['error_description']
-      redirect_to authenticated_root_path, :alert => "Dropbox: #{error} -> #{error_description}"
     else
-      @storage = @user.storages.new
-      @storage.provider = Gatherbox::Application.config.Dropbox[:PROVIDER]
-      @storage.token = params['code']
-      @storage.password = params['state']
-      ctrl = DropboxController.new(@storage, session)
-      ctrl.authenticate
-      ctrl.load_account_infos
-
-      unless (@user.storages.where(:uid => @storage.uid).length == 1)
-        @storage.destroy
-        redirect_to authenticated_root_path, :alert => "Dropbox: This drive has already been added"
-        return
-      end
-
-      #create uninitialized root folder
-      root_item = @storage.items.new(:remote_id => "/", :parent_remote_id => nil, :mimeType => "folder")
-      root_item.save
-      redirect_to authenticated_root_path
+      render json: {error: "missing authorization code"}, status: :unprocessable_entity
     end
   end
 

@@ -10,6 +10,9 @@ gem 'mysql2'
 
 gem 'bcrypt-ruby', :require => 'bcrypt'
 
+gem 'google-api-client'
+gem 'dropbox-sdk'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
