@@ -1,28 +1,23 @@
 class UsersController < ApplicationController
   before_action :authenticate, :except => [:create, :token]
 
-  # GET /users/1
-  # GET /users/1.json
+  # GET /account/info
   def show
     render json: @user
   end
 
-  # POST /users
-  # POST /users.json
+  # POST /account/create
   def create
     @user = User.new(user_params)
     if @user.save
-      render json: @user, status: :created, location: @user
+      render json: @user, status: :created
     else
       render json: @user.errors, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /users/1
-  # PATCH/PUT /users/1.json
+  # PATCH/PUT /account/update
   def update
-    @user = User.find(params[:id])
-
     if @user.update(params[:user])
       head :no_content
     else
@@ -30,6 +25,7 @@ class UsersController < ApplicationController
     end
   end
 
+  # POST /account/token
   def token
     @user = User.authenticate_with_credentials(user_params)
 

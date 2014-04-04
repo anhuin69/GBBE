@@ -3,7 +3,7 @@ Gatherbox::Application.routes.draw do
   post '/account/create' => 'users#create'
   get '/account/info' => 'users#show'
   put '/account/update' => 'users#update'
-  post '/token' => 'users#token'
+  post '/account/token' => 'users#token'
 
   get 'storages/:id/changes', to: 'storages#changes'
   resources :storages, except: :edit do
