@@ -1,3 +1,6 @@
+require 'api/api_controller'
+require 'api/google_drive_controller'
+
 class ItemsController < ApplicationController
   before_action :authenticate
   before_action :set_storage
@@ -6,7 +9,6 @@ class ItemsController < ApplicationController
   # GET /storages/:storage_id/files
   # retrieve items of the root folder
   def index
-    puts params
     @items = @storage.root.nil? ? [] : @storage.root.children
     render json: @items
   end
@@ -27,11 +29,10 @@ class ItemsController < ApplicationController
 
   # DELETE /storages/:storage_id/files/1
   def destroy
-    ctrl = ApiController.get_controller(@storage, session)
-    ctrl.authenticate
-    if (ctrl.delete(@item))
+    controller = ApiController.get_controller(@storage)
+    if (controller.delete(@item))
       @item.destroy
-      render json: @item, status: :ok
+      head :no_content
     else
       render json: @item, status: :unprocessable_entity
     end
@@ -40,9 +41,27 @@ class ItemsController < ApplicationController
   # GET /storages/:storage_id/files/1/changes
   # retrieve remote changes
   def changes
-    ctrl = ApiController.get_controller(@storage, session)
-    ctrl.authenticate
-    remote_file_changes = ctrl.update_files(nil, @item.remote_id)
+    controller = ApiController.get_controller(@storage)
+    status_code, remote_file_changes = controller.changes
+
+    if (status_code == 200)
+      remote_file_changes.each do |remote_id, remote_item|
+        local_item = @storage.items.where(:remote_id => remote_id).first
+        if (local_item.nil? && !remote_item.nil?)
+          local_item = @storage.items.new(remote_item)
+          local_item.save
+        elsif (!local_item.nil? && remote_item.nil?)
+          local_item.destroy
+        elsif (!local_item.nil? && !remote_item.nil?)
+          local_item.update(remote_item)
+        end
+      end
+      show
+    else
+      render json: {error: "impossible to load changes"}, status: :unprocessable_entity
+    end
+    return
+
     remote_file_changes.each do |remote_id, remote_file|
       local_item = Item.where(:storage_id => @storage.id, :remote_id => remote_id).first
       if (remote_file.nil? && local_item != nil)
@@ -59,15 +78,21 @@ class ItemsController < ApplicationController
 
   private
   def set_storage
-    @storage = Storage.where(:id => params[:storage_id], :user_id => current_user.id).first
+    @storage = Storage.where(:id => params[:storage_id], :user_id => @user.id).first
+    if (@storage.nil?)
+      render json: {error: "storage not found"}, status: :unprocessable_entity
+    end
   end
   # Use callbacks to share common setup or constraints between actions.
   def set_item
     @item = Item.where(:storage_id => @storage.id, :id => params[:id]).first
+    if (@item.nil?)
+      render json: {error: "file not found"}, status: :unprocessable_entity
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def item_params
-    params.require(:item).permit(:title, :description, :parent_remote_id)
+    params.require(:item).permit(:title, :description, :parent_id)
   end
 end

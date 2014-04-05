@@ -35,18 +35,30 @@ class StoragesController < ApplicationController
   end
 
   # Get remote changes
+  # Also update root folder
   def changes(controller = nil)
     controller = ApiController.get_controller(@storage) if controller.nil?
-    new_infos = controller.get_account_infos
-    if (new_infos[:code] == 200)
+    status_code, new_infos = controller.get_account_infos
+    if (status_code == 200)
       @storage.login = new_infos[:login]
       @storage.picture_url = new_infos[:picture_url]
       @storage.quota_bytes_total = new_infos[:quota_bytes_total]
       @storage.quota_bytes_used = new_infos[:quota_bytes_used]
       @storage.uid = new_infos[:root_folder_id]
-      if @storage.save
-        show
-        return
+      status_code, new_file_infos = controller.file_get(@storage.uid)
+      if @storage.save && status_code == 200
+        if (@storage.root.nil?)
+          @item = @storage.items.new(new_file_infos)
+          @storage.root = @item
+          saved = @item.save
+        else
+          @item = @storage.root
+          saved = @item.update(new_file_infos)
+        end
+        if (saved)
+          show
+          return
+        end
       end
     end
     render json: {error: "impossible to update storage informations"}, status: :internal_server_error
@@ -90,6 +102,6 @@ class StoragesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def storage_params
-    params.require(:storage).permit(:login)
+    params.require(:storage).permit(:login, :provider)
   end
 end

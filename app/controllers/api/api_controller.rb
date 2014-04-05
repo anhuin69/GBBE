@@ -25,9 +25,21 @@ class ApiController
   end
 
   # Get account informations and return them formated
-  # @return {:status, :login, :picture_url, :quota_bytes_total, quota_bytes_used, :root_folder_id, :etag}
+  # @return {:code, :login, :picture_url, :quota_bytes_total, quota_bytes_used, :root_folder_id, :etag}
   def get_account_infos
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 
+  # Get file informations and return them formated
+  # @return {:code, :remote_id, :remote_link, :title, :mimeType, :description, :parent_remote_id
+  # :createdDate, :modifiedDate, :userPermission, :fileSize, :iconLink, :etag, :md5checksum}
+  def file_get(remote_id)
+    raise "API.method.undefined #{self.class.name} #{__method__}"
+  end
+
+  # Get all changes on this storage since last check
+  # @return [file1 (similar to file_get return), ...]
+  def changes
+    raise "API.method.undefined #{self.class.name} #{__method__}"
+  end
 end
