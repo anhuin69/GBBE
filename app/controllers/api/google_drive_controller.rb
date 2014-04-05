@@ -29,15 +29,9 @@ class GoogleDriveController < ApiController
     begin
       @client.authorization.code = code
       @client.authorization.fetch_access_token!
-      puts "----------------------"
-      puts @client.authorization
-      puts "----------------------"
       @storage.token = @client.authorization.refresh_token
       return true
     rescue Exception => error
-      puts "====================="
-      puts error
-      puts "====================="
       return false
     end
   end

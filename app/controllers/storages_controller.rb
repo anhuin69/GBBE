@@ -28,23 +28,26 @@ class StoragesController < ApplicationController
   end
 
   # DELETE /storages/1
+  # Remove storage
   def destroy
     @storage.destroy
     head :no_content
   end
 
   # Get remote changes
-  def changes
-    ctrl = ApiController.get_controller(@storage)
-    new_infos = ctrl.get_account_infos
+  def changes(controller = nil)
+    controller = ApiController.get_controller(@storage) if controller.nil?
+    new_infos = controller.get_account_infos
     if (new_infos[:code] == 200)
       @storage.login = new_infos[:login]
       @storage.picture_url = new_infos[:picture_url]
       @storage.quota_bytes_total = new_infos[:quota_bytes_total]
       @storage.quota_bytes_used = new_infos[:quota_bytes_used]
       @storage.uid = new_infos[:root_folder_id]
-      show if @storage.save
-      return
+      if @storage.save
+        show
+        return
+      end
     end
     render json: {error: "impossible to update storage informations"}, status: :internal_server_error
   end
@@ -67,7 +70,7 @@ class StoragesController < ApplicationController
       @storage = @user.storages.new(:provider => "google_drive") #TODO: change that to manage all drive in uniformly
       controller = ApiController.get_controller(@storage)
       if !controller.nil? && controller.authorize(params[:code]) && @storage.save
-        show
+        changes(controller)
       else
         render json: {error: "invalid authorization code"}, status: :unprocessable_entity
       end
@@ -80,10 +83,13 @@ class StoragesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_storage
     @storage = Storage.where(:id => params[:id], :user_id => @user.id).first
+    if (@storage.nil?)
+      render json: {error: "storage not found"}, status: :unprocessable_entity
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def storage_params
-    params.require(:storage).permit(:provider, :token, :login, :password, :url, :port, :quota_bytes_total, :quota_bytes_used, :User)
+    params.require(:storage).permit(:login)
   end
 end
