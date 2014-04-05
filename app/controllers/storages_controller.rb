@@ -21,7 +21,7 @@ class StoragesController < ApplicationController
   # return ok or the errors
   def update
     if @storage.update(storage_params)
-      head :no_content
+      render json: {message: 'storage updated'}
     else
       render json: @storage.errors, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class StoragesController < ApplicationController
   # Remove storage
   def destroy
     @storage.destroy
-    head :no_content
+    render json: {message: 'storage removed'}
   end
 
   # Get remote changes

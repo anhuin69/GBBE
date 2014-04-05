@@ -90,6 +90,32 @@ class GoogleDriveController < ApiController
     return status_code, result
   end
 
+  def delete(remote_id)
+    api_result = @client.execute(:api_method => @drive.files.trash, #@drive.files.delete,
+                             :parameters => { 'fileId' => remote_id})
+    return api_result.status, (api_result.status != 200 ? api_result.data['error']['message'] : 'ok')
+  end
+
+  def patch(remote_id, resources)
+    api_result = @client.execute(:api_method => @drive.files.patch, :body_object => resources, :parameters => { 'fileId' => remote_id })
+    status_code = api_result.status
+    result = Hash.new
+    if (status_code == 200)
+        result = file_resource(api_result.data)
+    end
+    return status_code, result
+  end
+
+  def move(remote_id, old_parent_id, new_parent_id)
+    new_parent = @drive.parents.insert.request_schema.new({'id' => new_parent_id})
+    api_result = @client.execute(:api_method => @drive.parents.insert, :body_object => new_parent, :parameters => { 'fileId' => remote_id })
+    if (api_result.status == 200)
+      api_result = @client.execute(:api_method => @drive.parents.delete, :parameters => { 'fileId' => remote_id, 'parentId' => old_parent_id})
+    end
+    status_code = (api_result.status == 204) ? 200 : api_result.status
+    return status_code, (status_code != 200 ? api_result.data['error']['message'] : '')
+  end
+
   def file_resource(data)
     result = Hash.new
     result[:remote_id] = data.id

@@ -20,21 +20,33 @@ class ItemsController < ApplicationController
 
   # PATCH/PUT /storages/:storage_id/files/1
   def update
-    if @item.update(item_params)
-      head :no_content
+    new_params = item_params
+    new_params.delete(:provider) # just in case TODO: this is ugly -> to improve
+    controller = ApiController.get_controller(@storage)
+
+    if (new_params.key?(:parent_remote_id))
+      status_code, message = controller.move(@item.remote_id, @item.parent_remote_id, new_params[:parent_remote_id])
+      new_infos = {:parent_remote_id => new_params[:parent_remote_id]}
     else
-      render json: @item.errors, status: :unprocessable_entity
+      status_code, new_infos = controller.patch(@item.remote_id, new_params)
+    end
+    if (status_code == 200 && @item.update(new_infos))
+      show
+    else
+      message = 'impossible to update file informations' if message.nil?
+      render json: {error: message}, status: :unprocessable_entity
     end
   end
 
   # DELETE /storages/:storage_id/files/1
   def destroy
     controller = ApiController.get_controller(@storage)
-    if (controller.delete(@item))
+    status_code, message = controller.delete(@item.remote_id)
+    if (status_code == 200)
       @item.destroy
-      head :no_content
+      render json: {message: 'file moved to trash'}
     else
-      render json: @item, status: :unprocessable_entity
+      render json: {error: message}, status: :unprocessable_entity
     end
   end
 
@@ -80,19 +92,19 @@ class ItemsController < ApplicationController
   def set_storage
     @storage = Storage.where(:id => params[:storage_id], :user_id => @user.id).first
     if (@storage.nil?)
-      render json: {error: "storage not found"}, status: :unprocessable_entity
+      render json: {error: 'storage not found'}, status: :unprocessable_entity
     end
   end
   # Use callbacks to share common setup or constraints between actions.
   def set_item
     @item = Item.where(:storage_id => @storage.id, :id => params[:id]).first
     if (@item.nil?)
-      render json: {error: "file not found"}, status: :unprocessable_entity
+      render json: {error: 'file not found'}, status: :unprocessable_entity
     end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def item_params
-    params.require(:item).permit(:title, :description, :parent_id)
+    params.require(:item).permit(:title, :description, :parent_remote_id)
   end
 end
