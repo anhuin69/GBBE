@@ -4,7 +4,7 @@ class Item < ActiveRecord::Base
   has_many :children, -> (item){ where storage_id: item.storage_id }, class_name: 'Item', primary_key: 'remote_id', foreign_key: 'parent_remote_id'
 
   def as_json(options)
-    super(:only => [:id, :storage_id, :parent, :title, :description, :mimeType, :fileSize])
+    super(:only => [:id, :storage_id, :parent, :title, :description, :mimeType, :remote_link, :fileSize])
   end
 
 end

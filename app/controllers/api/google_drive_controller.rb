@@ -116,10 +116,42 @@ class GoogleDriveController < ApiController
     return status_code, (status_code != 200 ? api_result.data['error']['message'] : '')
   end
 
+  def copy(remote_id, parent_remote_id, copy_title)
+    copied_file = @drive.files.copy.request_schema.new({'title' => copy_title, 'parents' => [{'id' => parent_remote_id}]})
+    result = @client.execute(
+        :api_method => @drive.files.copy,
+        :body_object => copied_file,
+        :parameters => { 'fileId' => remote_id })
+    if result.status == 200
+      return result.status, file_resource(result.data)
+    else
+      return result.status, result.data['error']['message']
+    end
+  end
+
+  def create_folder(title, description, parent_remote_id)
+    file = @drive.files.insert.request_schema.new({
+                                                     'title' => title,
+                                                     'description' => description,
+                                                     'mimeType' => 'application/vnd.google-apps.folder'
+                                                 })
+    unless parent_remote_id.nil?
+      file.parents = [{'id' => parent_remote_id}]
+    end
+    result = @client.execute(
+        :api_method => @drive.files.insert,
+        :body_object => file)
+    if result.status == 200
+      return result.status, file_resource(result.data)
+    else
+      return result.status, result.data['error']['message']
+    end
+  end
+
   def file_resource(data)
     result = Hash.new
     result[:remote_id] = data.id
-    result[:remote_link] = data.selfLink unless (data['selfLink'].nil?)
+    result[:remote_link] = data.downloadUrl unless (data['downloadUrl'].nil?)
     result[:title] = data.title unless (data['title'].nil?)
     result[:mimeType] = data.mimeType unless (data['mimeType'].nil?)
     result[:description] = data.description unless (data['description'].nil?)

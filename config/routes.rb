@@ -11,6 +11,7 @@ Gatherbox::Application.routes.draw do
     # Files routes
     resources :items, path: 'files', except: :edit
     get 'files/:id/changes', to: 'items#changes'
+    post 'files/:id/copy', to: 'items#copy'
 
   end
 

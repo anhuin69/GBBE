@@ -4,7 +4,26 @@ require 'api/google_drive_controller'
 class ItemsController < ApplicationController
   before_action :authenticate
   before_action :set_storage
-  before_action :set_item, only: [:show, :update, :destroy, :changes]
+  before_action :set_item, only: [:show, :update, :destroy, :copy, :changes]
+
+  # POSTS /storages/:storage_id/files
+  # Create folder or upload file
+  def create
+    item = item_params
+    controller = ApiController.get_controller(@storage)
+    #TODO: change that to upload file instead of create folder if file specified
+    status_code, result = controller.create_folder(item[:title], item[:description], item[:parent_remote_id])
+    if (status_code == 200)
+      @item = @storage.items.new(result)
+      if (@item.save)
+        show
+      else
+        render json: {error: 'unknown error'}, status: :internal_server_error
+      end
+    else
+      render json: {error: result}, status: :unprocessable_entity
+    end
+  end
 
   # GET /storages/:storage_id/files
   # retrieve items of the root folder
@@ -47,6 +66,27 @@ class ItemsController < ApplicationController
       render json: {message: 'file moved to trash'}
     else
       render json: {error: message}, status: :unprocessable_entity
+    end
+  end
+
+  # POST /storages/:storage_id/files/:id/copy
+  # if the post parameter copy_title is not specified the
+  # copied item title is used
+  # duplicate the file
+  # TODO: maybe accept another parent_remote_id
+  def copy
+    controller = ApiController.get_controller(@storage)
+    status_code, result = controller.copy(@item.remote_id, @item.parent_remote_id, (params.key?(:copy_title) ? params[:copy_title] : @item.title + ' - copy'))
+    if (status_code == 200)
+      item_copy = @storage.items.new(result)
+      if item_copy.save
+        @item = item_copy
+        show
+      else
+        render json: {error: 'unknown error'}, status: :unprocessable_entity
+      end
+    else
+      render json: {error: result}, status: :unprocessable_entity
     end
   end
 
