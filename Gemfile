@@ -10,6 +10,8 @@ gem 'mysql2'
 
 gem 'bcrypt-ruby', :require => 'bcrypt'
 
+gem 'mime-types'
+
 gem 'google-api-client'
 gem 'dropbox-sdk'
 

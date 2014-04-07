@@ -8,14 +8,16 @@ Gatherbox::Application.config.api['google_drive'] = {
     :SECRET => 'Pr0t21clrTOBwBcjyWmLHrUZ',
     :OAUTH_SCOPE => 'https://www.googleapis.com/auth/drive', #, 'https://www.googleapis.com/auth/userinfo.email']
     :REDIRECT_URI => 'http://localhost:3000/storages/link_account',
-    :ROOT => 'root'
+    :ROOT => 'root',
+    :CLASS => 'GoogleDriveController'
 }
 Gatherbox::Application.config.api['dropbox'] = {
     :PROVIDER => 'dropbox',
     :ID => 'v3hc20relbafs8p',
     :SECRET => 'dhi1301p0ojj1sr',
     :REDIRECT_URI => 'http://localhost:3000/storages/dropbox_oauth2/callback',
-    :ROOT => '/'
+    :ROOT => '/',
+    :CLASS => 'DropboxController'
 }
 
 

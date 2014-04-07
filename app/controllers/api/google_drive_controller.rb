@@ -1,7 +1,6 @@
 require 'google/api_client'
 
 class GoogleDriveController < ApiController
-  attr_accessor :storage
 
   # TODO: manage revoked access
   def initialize(storage)
@@ -148,6 +147,24 @@ class GoogleDriveController < ApiController
     end
   end
 
+  def upload_file(parent_remote_id, title, mime_type, file_path)
+    file = @drive.files.insert.request_schema.new({'title' => title, 'mimeType' => mime_type, 'parents' => [{'id' => parent_remote_id}]})
+    media = Google::APIClient::UploadIO.new(file_path, mime_type)
+    api_result = @client.execute(
+        :api_method => @drive.files.insert,
+        :body_object => file,
+        :media => media,
+        :parameters => {
+            'uploadType' => 'multipart',
+            'alt' => 'json'})
+    if api_result.status == 200
+      return api_result.status, file_resource(api_result.data)
+    else
+      return api_result.status, api_result.data['error']['message']
+    end
+  end
+
+  # Convert a google drive file resource to unified hash values
   def file_resource(data)
     result = Hash.new
     result[:remote_id] = data.id

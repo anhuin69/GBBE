@@ -117,6 +117,7 @@ DEPENDENCIES
   bcrypt-ruby
   dropbox-sdk
   google-api-client
+  mime-types
   mysql2
   rails (= 4.0.4)
   rails-api

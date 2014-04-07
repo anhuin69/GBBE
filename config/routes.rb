@@ -12,7 +12,7 @@ Gatherbox::Application.routes.draw do
     resources :items, path: 'files', except: :edit
     get 'files/:id/changes', to: 'items#changes'
     post 'files/:id/copy', to: 'items#copy'
-
+    post 'files/upload', to: 'items#upload'
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

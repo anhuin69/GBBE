@@ -1,10 +1,11 @@
 
 class ApiController
+  attr_accessor :storage
 
   def self.get_controller(storage)
     controller = nil
     unless (Gatherbox::Application.config.api[storage.provider].nil?)
-      controller = GoogleDriveController.new(storage)
+      controller = Gatherbox::Application.config.api[storage.provider][:CLASS].constantize.new(storage)
     end
     return controller
   end
@@ -73,6 +74,14 @@ class ApiController
   # @return :code, {:remote_id, :remote_link, :title, :mimeType, :description, :parent_remote_id
   # :createdDate, :modifiedDate, :userPermission, :fileSize, :iconLink, :etag, :md5checksum}
   def create_folder(title, parent_remote_id)
+    raise "API.method.undefined #{self.class.name} #{__method__}"
+  end
+
+  # Upload a file in the parent folder specified
+  # return status_code, data
+  # data = error message if error
+  # else data = file_resource
+  def upload_file(parent_remote_id, title, mime_type, file_path)
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 end

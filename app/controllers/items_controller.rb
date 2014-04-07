@@ -1,17 +1,17 @@
 require 'api/api_controller'
 require 'api/google_drive_controller'
+require 'api/dropbox_controller'
 
 class ItemsController < ApplicationController
   before_action :authenticate
   before_action :set_storage
   before_action :set_item, only: [:show, :update, :destroy, :copy, :changes]
 
-  # POSTS /storages/:storage_id/files
-  # Create folder or upload file
+  # POST /storages/:storage_id/files
+  # Create folder
   def create
     item = item_params
     controller = ApiController.get_controller(@storage)
-    #TODO: change that to upload file instead of create folder if file specified
     status_code, result = controller.create_folder(item[:title], item[:description], item[:parent_remote_id])
     if (status_code == 200)
       @item = @storage.items.new(result)
@@ -23,6 +23,40 @@ class ItemsController < ApplicationController
     else
       render json: {error: result}, status: :unprocessable_entity
     end
+  end
+
+  # POST /storages/:storage_id/upload
+  # Upload new file
+  # params {:title => mandatory, :description => optional, :parent_remote_id => optional (default = root)}
+  def upload
+    message = ''
+    if (params.key?(:file) && params[:file].respond_to?(:path))
+      file_title = (params.key?(:title) && !params[:title].empty?) ? params[:title] : params[:file].original_filename
+      parent = (params.key?(:parent_remote_id) && !params[:parent_remote_id].empty?) ? @storage.items.find_by_remote_id(params[:parent_remote_id]) : @storage.root
+      if (parent.nil? || !parent.is_folder)
+        message = parent.nil? ? 'bad parent folder remote id' : 'parent remote id is not a folder'
+      else
+        controller = ApiController.get_controller(@storage)
+        mime_type = MIME::Types.type_for(params[:file].original_filename).first
+        mime_type = mime_type.nil? ? 'text/plain' : mime_type.content_type
+
+        status_code, result = controller.upload_file(parent.remote_id, file_title, mime_type, params[:file].path)
+        if (status_code == 200)
+          @item = @storage.items.new(result)
+          if (@item.save)
+            show
+          else
+            render json: {error: 'unknown error'}, status: :internal_server_error
+          end
+          return
+        else
+          message = result
+        end
+      end
+    else
+      message = 'missing parameters'
+    end
+    render json: {error: message}, status: :unprocessable_entity
   end
 
   # GET /storages/:storage_id/files

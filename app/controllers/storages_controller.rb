@@ -1,5 +1,6 @@
 require 'api/api_controller'
 require 'api/google_drive_controller'
+require 'api/dropbox_controller'
 
 class StoragesController < ApplicationController
   before_action :authenticate
