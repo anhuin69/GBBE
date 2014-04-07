@@ -3,11 +3,10 @@
 #### [Gatherbox - Frontend](https://github.com/Ephismen/GBFE)
 
 ######List of online storages: 
-- Google Drive (on work)
-- Dropbox (on work)
+- Google Drive (90%)
+- Dropbox (20%)
 - Mega (todo)
 - FTP (todo)
-- Generic REST client (todo)
 - More... (todo)
 
 ### Documentation
