@@ -43,6 +43,19 @@ class ApiController
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 
+  # Delete file
+  # @return :code, :error (if :code != 200)
+  def delete(remote_id)
+    raise "API.method.undefined #{self.class.name} #{__method__}"
+  end
+
+  # Update file informations
+  # @return :code, {:remote_id, :remote_link, :title, :mimeType, :description, :parent_remote_id
+  # :createdDate, :modifiedDate, :userPermission, :fileSize, :iconLink, :etag, :md5checksum}
+  def patch(remote_id, resources)
+    raise "API.method.undefined #{self.class.name} #{__method__}"
+  end
+
   # Move a file or folder
   # @return :code, :message (empty if no error)
   def move(remote_id, old_parent_id, new_parent_id)
