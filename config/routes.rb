@@ -6,7 +6,7 @@ Gatherbox::Application.routes.draw do
   post '/account/token' => 'users#token'
 
   get 'storages/:id/changes', to: 'storages#changes'
-  get 'storages/link_account', to: 'storages#link_account'
+  get 'storages/link_account/:format', to: 'storages#link_account'
   resources :storages, except: :edit do
     # Files routes
     resources :items, path: 'files', except: :edit

@@ -3,8 +3,8 @@ require 'google/api_client'
 class GoogleDriveController < ApiController
 
   # TODO: manage revoked access
-  def initialize(storage)
-    super(storage)
+  def initialize(storage, csrf_token = nil)
+    super(storage, csrf_token)
     @client = Google::APIClient.new
     @client.authorization.client_id = Gatherbox::Application.config.api[storage.provider][:ID]
     @client.authorization.client_secret = Gatherbox::Application.config.api[storage.provider][:SECRET]
@@ -25,7 +25,7 @@ class GoogleDriveController < ApiController
     return @client.authorization.authorization_uri(:state => "#{@storage.user.authentication_token},#{@storage.user.email}").to_s
   end
 
-  def authorize(code)
+  def authorize(code, state = nil)
     begin
       @client.authorization.code = code
       @client.authorization.fetch_access_token!

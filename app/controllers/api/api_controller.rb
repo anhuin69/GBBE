@@ -2,15 +2,15 @@
 class ApiController
   attr_accessor :storage
 
-  def self.get_controller(storage)
+  def self.get_controller(storage, csrf_token = nil)
     controller = nil
     unless (Gatherbox::Application.config.api[storage.provider].nil?)
-      controller = Gatherbox::Application.config.api[storage.provider][:CLASS].constantize.new(storage)
+      controller = Gatherbox::Application.config.api[storage.provider][:CLASS].constantize.new(storage, csrf_token)
     end
     return controller
   end
 
-  def initialize(storage)
+  def initialize(storage, csrf_token)
     @storage = storage
   end
 
@@ -21,7 +21,7 @@ class ApiController
 
   # Authorize the authentication to a user account on a remote storage
   # @return boolean (true if authorized, false otherwise)
-  def authorize(code)
+  def authorize(code, state = nil)
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 

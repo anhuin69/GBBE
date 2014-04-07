@@ -77,12 +77,12 @@ class StoragesController < ApplicationController
     end
   end
 
-  # Callback from provider
+  # Callback from oauth2 providers
   def link_account
-    if (params.key?(:code))
-      @storage = @user.storages.new(:provider => "google_drive") #TODO: change that to manage all drive in uniformly
-      controller = ApiController.get_controller(@storage)
-      if !controller.nil? && controller.authorize(params[:code]) && @storage.save
+    if (params.key?(:code) && params.key?(:format) && Gatherbox::Application.config.api.key?(params[:format]))
+      @storage = @user.storages.new(:provider => params[:format])
+      controller = ApiController.get_controller(@storage, params[:state])
+      if !controller.nil? && controller.authorize(params[:code], params[:state]) && @storage.save
         changes(controller)
       else
         render json: {error: "invalid authorization code"}, status: :unprocessable_entity

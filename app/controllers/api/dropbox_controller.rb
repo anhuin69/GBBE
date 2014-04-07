@@ -1,25 +1,51 @@
+require 'dropbox_sdk'
 
 class DropboxController < ApiController
 
-  def initialize(storage)
-    super(storage)
-    
+  # TODO: manage revoked access
+  def initialize(storage, csrf_token = nil)
+    super(storage, csrf_token)
+    @flow = DropboxOAuth2Flow.new(Gatherbox::Application.config.api[storage.provider][:ID],
+                                  Gatherbox::Application.config.api[storage.provider][:SECRET],
+                                  Gatherbox::Application.config.api[storage.provider][:REDIRECT_URI],
+                                  {:dropbox_auth_csrf_token => csrf_token},
+                                  :dropbox_auth_csrf_token)
+    initialize_client
   end
 
+  def initialize_client
+    if (@storage.token.nil? || @storage.token.empty?)
+      @client = nil
+    else
+      @client = DropboxClient.new(@storage.token)
+    end
+  end
   def get_authorization_url
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    return @flow.start("#{@storage.user.authentication_token},#{@storage.user.email}")
   end
 
-  def authorize(code)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+  def authorize(code, state = nil)
+    #TODO manage errors (no code / bad code...)
+    access_token, user_id, url_state = @flow.finish({'code' => code, 'state' => state})
+    @storage.token = access_token
+    initialize_client
+    return true
   end
 
   def get_account_infos
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    account_infos = @client.account_info()
+    result = Hash.new
+    result[:login] = account_infos['display_name']
+    result[:quota_bytes_total] = account_infos['quota_info']['quota']
+    result[:quota_bytes_used] = account_infos['quota_info']['normal'] + account_infos['quota_info']['shared']
+    result[:root_folder_id] = '/'
+    return 200, result
   end
 
   def file_get(remote_id)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    api_result = @client.metadata(remote_id, 25000, true)
+    #TODO: store children and hash
+    return 200, file_resource(api_result)
   end
 
   def changes
@@ -48,5 +74,12 @@ class DropboxController < ApiController
 
   def upload_file(parent_remote_id, title, mime_type, file_path)
     raise "API.method.undefined #{self.class.name} #{__method__}"
+  end
+
+  #TODO: store all data
+  def file_resource(data)
+    result = Hash.new
+    result[:remote_id] = data['path']
+    return result
   end
 end
