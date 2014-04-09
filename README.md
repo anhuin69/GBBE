@@ -3,10 +3,10 @@
 #### [Gatherbox - Frontend](https://github.com/Ephismen/GBFE)
 
 ######List of online storages: 
-- Google Drive (90%)
-- Dropbox (20%)
-- Mega (todo)
-- FTP (todo)
+- Google Drive (100%)
+- Dropbox (100%)
+- Mega (On work)
+- FTP (On work)
 - More... (todo)
 
 ### Documentation
@@ -68,173 +68,195 @@ users#token
   </td>
   <td>Login - auth token</td>
 </tr>
+
+<tr>
+  <td></td><td></td><td></td><td></td>
+</tr>
+
 <tr>
   <td>
 GET
   </td>
   <td>
-/storages(.:format)
+/storages
   </td>
   <td data-route-reqs="storages#index">
 storages#index
   </td>
   <td>Get all storages</td>
 </tr>
+
 <tr>
   <td>
 POST
   </td>
   <td>
-/storages(.:format)
+/storages
   </td>
   <td data-route-reqs="storages#create">
 storages#create
   </td>
   <td>Add new storage</td>
 </tr>
+
 <tr>
   <td>
 GET
   </td>
   <td>
-/storages/:id(.:format)
+/storages/link_account/:format
+  </td>
+  <td data-route-reqs="storages#create">
+storages#link_account
+  </td>
+  <td>Link account callback (used by providers only)</td>
+</tr>
+
+<tr>
+  <td>
+GET
+  </td>
+  <td>
+/storages/:id
   </td>
   <td data-route-reqs="storages#show">
 storages#show
   </td>
   <td>Storage informations</td>
 </tr>
+
 <tr>
   <td>
-PATCH
+PATCH / PUT
   </td>
   <td>
-/storages/:id(.:format)
+/storages/:id
   </td>
   <td data-route-reqs="storages#update">
 storages#update
   </td>
   <td>Edit storage informations</td>
 </tr>
-<tr>
-  <td>
-PUT
-  </td>
-  <td>
-/storages/:id(.:format)
-  </td>
-  <td data-route-reqs="storages#update">
-storages#update
-  </td>
-  <td>Edit storage informations</td>
-</tr>
+
 <tr>
   <td>
 DELETE
   </td>
   <td>
-/storages/:id(.:format)
+/storages/:id
   </td>
   <td data-route-reqs="storages#destroy">
 storages#destroy
   </td>
   <td>Delete storage</td>
 </tr>
+
 <tr>
   <td>
 GET
   </td>
   <td>
-/storages/:id/changes(.:format)
+/storages/:id/changes
   </td>
   <td data-route-reqs="storages#changes">
 storages#changes
   </td>
-  <td>Update remote storage informations</td>
+  <td>Get remote storage informations</td>
 </tr>
+
+<tr>
+  <td></td><td></td><td></td><td></td>
+</tr>
+
 <tr>
   <td>
 GET
   </td>
   <td>
-/storages/:storage_id/files(.:format)
+/storages/:storage_id/files
   </td>
   <td data-route-reqs="items#index">
 items#index
   </td>
-  <td>Storage root files</td>
+  <td>Get storage root files</td>
 </tr>
+
 <tr>
   <td>
 POST
   </td>
   <td>
-/storages/:storage_id/files(.:format)
+/storages/:storage_id/files
   </td>
   <td data-route-reqs="items#create">
 items#create
   </td>
-  <td>Add file/folder to storage</td>
+  <td>Add folder to storage</td>
 </tr>
+
+<tr>
+  <td>
+POST
+  </td>
+  <td>
+/storages/:storage_id/files/upload
+  </td>
+  <td data-route-reqs="items#upload">
+items#upload
+  </td>
+  <td>Upload new file to storage</td>
+</tr>
+
 <tr>
   <td>
 GET
   </td>
   <td>
-/storages/:storage_id/files/:id(.:format)
+/storages/:storage_id/files/:id
   </td>
   <td data-route-reqs="items#show">
 items#show
   </td>
-  <td>File informations</td>
+  <td>Get file informations</td>
 </tr>
+
 <tr>
   <td>
-PATCH
+PATCH / PUT
   </td>
   <td>
-/storages/:storage_id/files/:id(.:format)
+/storages/:storage_id/files/:id
   </td>
   <td data-route-reqs="items#update">
 items#update
   </td>
   <td>Edit file informations</td>
 </tr>
-<tr>
-  <td>
-PUT
-  </td>
-  <td>
-/storages/:storage_id/files/:id(.:format)
-  </td>
-  <td data-route-reqs="items#update">
-items#update
-  </td>
-  <td>Edit file informations</td>
-</tr>
+
 <tr>
   <td>
 DELETE
   </td>
   <td>
-/storages/:storage_id/files/:id(.:format)
+/storages/:storage_id/files/:id
   </td>
   <td data-route-reqs="items#destroy">
 items#destroy
   </td>
   <td>Delete file</td>
 </tr>
+
 <tr>
   <td>
 GET
   </td>
   <td>
-/storages/:storage_id/files/:id/changes(.:format)
+/storages/:storage_id/files/:id/changes
   </td>
   <td data-route-reqs="items#changes">
 items#changes
   </td>
-  <td>Update remote file informations</td>
+  <td>Get remote file informations</td>
 </tr>
 </tbody>
 </table>
