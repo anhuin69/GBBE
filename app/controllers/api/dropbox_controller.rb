@@ -19,6 +19,7 @@ class DropboxController < ApiController
       @client = DropboxClient.new(@storage.token)
     end
   end
+
   def get_authorization_url
     return @flow.start("#{@storage.user.authentication_token},#{@storage.user.email}")
   end
@@ -101,7 +102,8 @@ class DropboxController < ApiController
 
   def delete(remote_id)
     begin
-      raise "API.method.undefined #{self.class.name} #{__method__}"
+      @client.file_delete(remote_id)
+      return 200, 'ok'
     rescue Exception => error
       if (error.instance_of?(DropboxNotModified))
         return 200, Hash.new
@@ -115,7 +117,15 @@ class DropboxController < ApiController
 
   def patch(remote_id, resources)
     begin
-      raise "API.method.undefined #{self.class.name} #{__method__}"
+      unless (resources[:title].nil? || resources[:title].empty? || remote_id == '/')
+        new_path = remote_id
+        name_idx = new_path.rindex('/')
+        new_path = new_path[0..name_idx] + resources[:title]
+        api_result = @client.file_move(remote_id, new_path)
+        return 200, file_resource(api_result)
+      else
+        return 200, Hash.new
+      end
     rescue Exception => error
       if (error.instance_of?(DropboxNotModified))
         return 200, Hash.new
@@ -129,7 +139,10 @@ class DropboxController < ApiController
 
   def move(remote_id, old_parent_id, new_parent_id)
     begin
-      raise "API.method.undefined #{self.class.name} #{__method__}"
+      file_title = remote_id.split('/').last
+      new_path = new_parent_id + '/' + file_title
+      api_result = @client.file_move(remote_id, new_path)
+      return 200, file_resource(api_result)
     rescue Exception => error
       if (error.instance_of?(DropboxNotModified))
         return 200, Hash.new
@@ -143,7 +156,9 @@ class DropboxController < ApiController
 
   def copy(remote_id, parent_remote_id, copy_title)
     begin
-      raise "API.method.undefined #{self.class.name} #{__method__}"
+      new_path = parent_remote_id + '/' + copy_title
+      api_result = @client.file_copy(remote_id, new_path)
+      return 200, file_resource(api_result)
     rescue Exception => error
       if (error.instance_of?(DropboxNotModified))
         return 200, Hash.new
@@ -157,7 +172,8 @@ class DropboxController < ApiController
 
   def create_folder(title, parent_remote_id)
     begin
-      raise "API.method.undefined #{self.class.name} #{__method__}"
+      api_result = @client.file_create_folder(parent_remote_id + '/' + title)
+      return 200, file_resource(api_result)
     rescue Exception => error
       if (error.instance_of?(DropboxNotModified))
         return 200, Hash.new
@@ -171,7 +187,9 @@ class DropboxController < ApiController
 
   def upload_file(parent_remote_id, title, mime_type, file_path)
     begin
-      raise "API.method.undefined #{self.class.name} #{__method__}"
+      file = open(file_path)
+      api_result = @client.put_file(parent_remote_id + '/' + title, file)
+      return 200, file_resource(api_result)
     rescue Exception => error
       if (error.instance_of?(DropboxNotModified))
         return 200, Hash.new
