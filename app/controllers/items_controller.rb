@@ -75,7 +75,6 @@ class ItemsController < ApplicationController
   # PATCH/PUT /storages/:storage_id/files/1
   def update
     new_params = item_params
-    new_params.delete(:provider) # just in case TODO: this is ugly -> to change
     controller = ApiController.get_controller(@storage)
 
     if (new_params.key?(:parent_remote_id))

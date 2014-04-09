@@ -21,7 +21,9 @@ class StoragesController < ApplicationController
   # PATCH/PUT /storages/1
   # return ok or the errors
   def update
-    if @storage.update(storage_params)
+    new_params = storage_params
+    new_params.delete(:provider) # just in case TODO: this is ugly -> to change
+    if @storage.update(new_params)
       render json: {message: 'storage updated'}
     else
       render json: @storage.errors, status: :unprocessable_entity
