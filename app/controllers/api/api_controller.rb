@@ -38,9 +38,9 @@ class ApiController
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 
-  # Get all changes on this storage since last check
+  # Get all changes on this storage (and in the specified folder - depend of the api) since last check
   # @return [file1 (similar to file_get return), ...]
-  def changes
+  def changes(item)
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 

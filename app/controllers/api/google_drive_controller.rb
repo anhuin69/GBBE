@@ -63,7 +63,7 @@ class GoogleDriveController < ApiController
     return status_code, result
   end
 
-  def changes(page_token = nil)
+  def changes(local_item, page_token = nil)
     parameters = Hash.new
     parameters['pageToken'] = page_token unless page_token.nil?
     parameters['startChangeId'] = @storage.etag.to_i unless @storage.etag.nil?
@@ -79,7 +79,7 @@ class GoogleDriveController < ApiController
         end
         result[change.fileId] = item
       end
-      next_page_status, next_page_result = changes(api_result.data.nextPageToken) unless api_result.data['nextPageToken'].nil? || api_result.data['nextPageToken'].empty?
+      next_page_status, next_page_result = changes(nil, api_result.data.nextPageToken) unless api_result.data['nextPageToken'].nil? || api_result.data['nextPageToken'].empty?
       if (next_page_status == 200)
         result = result.deep_merge(next_page_result)
       end

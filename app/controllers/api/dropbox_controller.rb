@@ -43,13 +43,37 @@ class DropboxController < ApiController
   end
 
   def file_get(remote_id)
-    api_result = @client.metadata(remote_id, 25000, true)
-    #TODO: store children and hash
+    api_result = @client.metadata(remote_id, 0, false)
     return 200, file_resource(api_result)
   end
 
-  def changes
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+  def changes(local_item)
+    begin
+      api_result = @client.metadata(local_item.remote_id, 25000, true, local_item.etag, nil, true)
+      status_code = 200
+      result = Hash.new
+      result[api_result['path']] = api_result['is_deleted'] ? nil : file_resource(api_result)
+
+      unless (api_result['contents'].nil?)
+        api_result['contents'].each do |sub_file|
+          if (sub_file['is_deleted'])
+            result[sub_file['path']] = nil
+          else
+            result[sub_file['path']] = file_resource(sub_file)
+            result[sub_file['path']][:parent_remote_id] = api_result['path']
+          end
+        end
+      end
+
+    rescue Exception => error
+      result = Hash.new
+      if (error.instance_of?(DropboxNotModified))
+        status_code = 200
+      else
+        status_code = :unprocessable_entity
+      end
+    end
+    return status_code, result
   end
 
   def delete(remote_id)
@@ -76,10 +100,14 @@ class DropboxController < ApiController
     raise "API.method.undefined #{self.class.name} #{__method__}"
   end
 
-  #TODO: store all data
   def file_resource(data)
     result = Hash.new
     result[:remote_id] = data['path']
+    result[:mimeType] = data['is_dir'] ? 'application/folder' : data['mime_type']
+    result[:fileSize] = data['bytes']
+    result[:modifiedDate] = data['modified']
+    result[:title] = data['path'] == '/' ? '/' : data['path'].split('/').last
+    result[:etag] = data['hash'] unless data['hash'].nil?
     return result
   end
 end

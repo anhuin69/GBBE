@@ -128,7 +128,7 @@ class ItemsController < ApplicationController
   # retrieve remote changes
   def changes
     controller = ApiController.get_controller(@storage)
-    status_code, remote_file_changes = controller.changes
+    status_code, remote_file_changes = controller.changes(@item)
 
     if (status_code == 200)
       remote_file_changes.each do |remote_id, remote_item|
