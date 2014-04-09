@@ -25,11 +25,11 @@ class ItemsController < ApplicationController
     end
   end
 
-  # POST /storages/:storage_id/upload
+  # POST /storages/:storage_id/files/upload
   # Upload new file
   # params {:title => mandatory, :description => optional, :parent_remote_id => optional (default = root)}
   def upload
-    message = ''
+    message = 'unknown error'
     status_code = :unprocessable_entity
     if (params.key?(:file) && params[:file].respond_to?(:path))
       file_title = (params.key?(:title) && !params[:title].empty?) ? params[:title] : params[:file].original_filename
@@ -47,7 +47,7 @@ class ItemsController < ApplicationController
           if (@item.save)
             show
           else
-            render json: {error: 'unknown error'}, status: :internal_server_error
+            render json: {error: message}, status: :internal_server_error
           end
           return
         else
