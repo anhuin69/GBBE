@@ -2,7 +2,6 @@ require 'dropbox_sdk'
 
 class DropboxController < ApiController
 
-  # TODO: manage revoked access
   def initialize(storage, csrf_token = nil)
     super(storage, csrf_token)
     @flow = DropboxOAuth2Flow.new(Gatherbox::Application.config.api[storage.provider][:ID],
@@ -25,26 +24,49 @@ class DropboxController < ApiController
   end
 
   def authorize(code, state = nil)
-    #TODO manage errors (no code / bad code...)
-    access_token, user_id, url_state = @flow.finish({'code' => code, 'state' => state})
-    @storage.token = access_token
-    initialize_client
-    return true
+    begin
+      access_token, user_id, url_state = @flow.finish({'code' => code, 'state' => state})
+      @storage.token = access_token
+      initialize_client
+      return true
+    rescue Exception => error
+      return false
+    end
   end
 
   def get_account_infos
-    account_infos = @client.account_info()
-    result = Hash.new
-    result[:login] = account_infos['display_name']
-    result[:quota_bytes_total] = account_infos['quota_info']['quota']
-    result[:quota_bytes_used] = account_infos['quota_info']['normal'] + account_infos['quota_info']['shared']
-    result[:root_folder_id] = '/'
-    return 200, result
+    begin
+      account_infos = @client.account_info()
+      result = Hash.new
+      result[:login] = account_infos['display_name']
+      result[:quota_bytes_total] = account_infos['quota_info']['quota']
+      result[:quota_bytes_used] = account_infos['quota_info']['normal'] + account_infos['quota_info']['shared']
+      result[:root_folder_id] = '/'
+      return 200, result
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def file_get(remote_id)
-    api_result = @client.metadata(remote_id, 0, false)
-    return 200, file_resource(api_result)
+    begin
+      api_result = @client.metadata(remote_id, 0, false)
+      return 200, file_resource(api_result)
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def changes(local_item)
@@ -66,38 +88,99 @@ class DropboxController < ApiController
       end
 
     rescue Exception => error
-      result = Hash.new
       if (error.instance_of?(DropboxNotModified))
-        status_code = 200
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
       else
-        status_code = :unprocessable_entity
+        return :unprocessable_entity, error.to_s
       end
     end
     return status_code, result
   end
 
   def delete(remote_id)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    begin
+      raise "API.method.undefined #{self.class.name} #{__method__}"
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def patch(remote_id, resources)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    begin
+      raise "API.method.undefined #{self.class.name} #{__method__}"
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def move(remote_id, old_parent_id, new_parent_id)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    begin
+      raise "API.method.undefined #{self.class.name} #{__method__}"
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def copy(remote_id, parent_remote_id, copy_title)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    begin
+      raise "API.method.undefined #{self.class.name} #{__method__}"
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def create_folder(title, parent_remote_id)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    begin
+      raise "API.method.undefined #{self.class.name} #{__method__}"
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def upload_file(parent_remote_id, title, mime_type, file_path)
-    raise "API.method.undefined #{self.class.name} #{__method__}"
+    begin
+      raise "API.method.undefined #{self.class.name} #{__method__}"
+    rescue Exception => error
+      if (error.instance_of?(DropboxNotModified))
+        return 200, Hash.new
+      elsif (error.instance_of?(DropboxAuthError))
+        return :not_acceptable, 'unauthorized drive'
+      else
+        return :unprocessable_entity, error.to_s
+      end
+    end
   end
 
   def file_resource(data)

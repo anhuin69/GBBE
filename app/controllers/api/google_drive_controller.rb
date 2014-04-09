@@ -2,7 +2,6 @@ require 'google/api_client'
 
 class GoogleDriveController < ApiController
 
-  # TODO: manage revoked access
   def initialize(storage, csrf_token = nil)
     super(storage, csrf_token)
     @client = Google::APIClient.new
@@ -11,10 +10,10 @@ class GoogleDriveController < ApiController
     @client.authorization.redirect_uri = Gatherbox::Application.config.api[storage.provider][:REDIRECT_URI]
     @client.authorization.scope = Gatherbox::Application.config.api[storage.provider][:OAUTH_SCOPE]
     begin
-      @drive = @client.discovered_api('drive', 'v2')
       unless (@storage.token.nil?)
         @client.authorization.refresh_token = @storage.token
         @client.authorization.fetch_access_token!
+        init_drive_api
       end
     rescue
       @drive = nil;
@@ -25,24 +24,30 @@ class GoogleDriveController < ApiController
     return @client.authorization.authorization_uri(:state => "#{@storage.user.authentication_token},#{@storage.user.email}").to_s
   end
 
+  def init_drive_api
+    @drive = @client.discovered_api('drive', 'v2')
+  end
+
   def authorize(code, state = nil)
     begin
       @client.authorization.code = code
       @client.authorization.fetch_access_token!
       @storage.token = @client.authorization.refresh_token
+      init_drive_api
       return true
     rescue Exception => error
+      @drive = nil
       return false
     end
   end
 
   def get_account_infos
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     api_result = @client.execute(:api_method => @drive.about.get)
     result = Hash.new
     status_code = api_result.status
     if (status_code == 200)
-      puts "------------------------"
-      puts api_result.data.to_json
       result[:login] = api_result.data.name
       result[:picture_url] = (api_result.data.user.nil? || api_result.data.user.picture.nil?) ? nil : api_result.data.user.picture.url
       result[:quota_bytes_total] = api_result.data.quota_bytes_total
@@ -54,24 +59,29 @@ class GoogleDriveController < ApiController
   end
 
   def file_get(remote_id)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     api_result = @client.execute(:api_method => @drive.files.get, :parameters => { 'fileId' => remote_id })
-    result = Hash.new
     status_code = api_result.status
     if (status_code == 200)
       result = file_resource(api_result.data)
+    else
+      result = api_result.data['error']['message']
     end
     return status_code, result
   end
 
   def changes(local_item, page_token = nil)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     parameters = Hash.new
     parameters['pageToken'] = page_token unless page_token.nil?
     parameters['startChangeId'] = @storage.etag.to_i unless @storage.etag.nil?
 
     api_result = @client.execute(:api_method => @drive.changes.list, :parameters => parameters)
     status_code = api_result.status
-    result = Hash.new
     if (status_code == 200)
+      result = Hash.new
       api_result.data.items.each do |change|
         item = nil
         unless (change.deleted || change.file.labels['trashed'] == true)
@@ -85,27 +95,36 @@ class GoogleDriveController < ApiController
       end
       @storage.etag = (api_result.data.largestChangeId + 1).to_s
       @storage.save
+    else
+      result = api_result.data['error']['message']
     end
     return status_code, result
   end
 
   def delete(remote_id)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     api_result = @client.execute(:api_method => @drive.files.trash, #@drive.files.delete,
                              :parameters => { 'fileId' => remote_id})
     return api_result.status, (api_result.status != 200 ? api_result.data['error']['message'] : 'ok')
   end
 
   def patch(remote_id, resources)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     api_result = @client.execute(:api_method => @drive.files.patch, :body_object => resources, :parameters => { 'fileId' => remote_id })
     status_code = api_result.status
-    result = Hash.new
     if (status_code == 200)
         result = file_resource(api_result.data)
+    else
+      result = api_result.data['error']['message']
     end
     return status_code, result
   end
 
   def move(remote_id, old_parent_id, new_parent_id)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     new_parent = @drive.parents.insert.request_schema.new({'id' => new_parent_id})
     api_result = @client.execute(:api_method => @drive.parents.insert, :body_object => new_parent, :parameters => { 'fileId' => remote_id })
     if (api_result.status == 200)
@@ -116,6 +135,8 @@ class GoogleDriveController < ApiController
   end
 
   def copy(remote_id, parent_remote_id, copy_title)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     copied_file = @drive.files.copy.request_schema.new({'title' => copy_title, 'parents' => [{'id' => parent_remote_id}]})
     result = @client.execute(
         :api_method => @drive.files.copy,
@@ -129,6 +150,8 @@ class GoogleDriveController < ApiController
   end
 
   def create_folder(title, description, parent_remote_id)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     file = @drive.files.insert.request_schema.new({
                                                      'title' => title,
                                                      'description' => description,
@@ -148,6 +171,8 @@ class GoogleDriveController < ApiController
   end
 
   def upload_file(parent_remote_id, title, mime_type, file_path)
+    return :not_acceptable, 'unauthorized drive' if @drive.nil?
+
     file = @drive.files.insert.request_schema.new({'title' => title, 'mimeType' => mime_type, 'parents' => [{'id' => parent_remote_id}]})
     media = Google::APIClient::UploadIO.new(file_path, mime_type)
     api_result = @client.execute(

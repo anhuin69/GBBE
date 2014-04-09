@@ -62,7 +62,7 @@ class StoragesController < ApplicationController
         end
       end
     end
-    render json: {error: "impossible to update storage informations"}, status: :internal_server_error
+    render json: {error: new_infos}, status: status_code
   end
 
   # POST /storages
@@ -73,7 +73,7 @@ class StoragesController < ApplicationController
     unless controller.nil? || (url = controller.get_authorization_url).nil?
       render json: {url: url}
     else
-      render json: {error: "unknown provider"}, status: :internal_server_error
+      render json: {error: "unknown provider"}, status: :unprocessable_entity
     end
   end
 
@@ -85,7 +85,7 @@ class StoragesController < ApplicationController
       if !controller.nil? && controller.authorize(params[:code], params[:state]) && @storage.save
         changes(controller)
       else
-        render json: {error: "invalid authorization code"}, status: :unprocessable_entity
+        render json: {error: "invalid or revoked authorization code"}, status: :unprocessable_entity
       end
     else
       render json: {error: "missing authorization code"}, status: :unprocessable_entity

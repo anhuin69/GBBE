@@ -21,7 +21,7 @@ class ItemsController < ApplicationController
         render json: {error: 'unknown error'}, status: :internal_server_error
       end
     else
-      render json: {error: result}, status: :unprocessable_entity
+      render json: {error: result}, status: status_code
     end
   end
 
@@ -30,6 +30,7 @@ class ItemsController < ApplicationController
   # params {:title => mandatory, :description => optional, :parent_remote_id => optional (default = root)}
   def upload
     message = ''
+    status_code = :unprocessable_entity
     if (params.key?(:file) && params[:file].respond_to?(:path))
       file_title = (params.key?(:title) && !params[:title].empty?) ? params[:title] : params[:file].original_filename
       parent = (params.key?(:parent_remote_id) && !params[:parent_remote_id].empty?) ? @storage.items.find_by_remote_id(params[:parent_remote_id]) : @storage.root
@@ -56,7 +57,7 @@ class ItemsController < ApplicationController
     else
       message = 'missing parameters'
     end
-    render json: {error: message}, status: :unprocessable_entity
+    render json: {error: message}, status: status_code
   end
 
   # GET /storages/:storage_id/files
@@ -74,7 +75,7 @@ class ItemsController < ApplicationController
   # PATCH/PUT /storages/:storage_id/files/1
   def update
     new_params = item_params
-    new_params.delete(:provider) # just in case TODO: this is ugly -> to improve
+    new_params.delete(:provider) # just in case TODO: this is ugly -> to change
     controller = ApiController.get_controller(@storage)
 
     if (new_params.key?(:parent_remote_id))
@@ -87,7 +88,7 @@ class ItemsController < ApplicationController
       show
     else
       message = 'impossible to update file informations' if message.nil?
-      render json: {error: message}, status: :unprocessable_entity
+      render json: {error: message}, status: status_code
     end
   end
 
@@ -99,7 +100,7 @@ class ItemsController < ApplicationController
       @item.destroy
       render json: {message: 'file moved to trash'}
     else
-      render json: {error: message}, status: :unprocessable_entity
+      render json: {error: message}, status: status_code
     end
   end
 
@@ -120,7 +121,7 @@ class ItemsController < ApplicationController
         render json: {error: 'unknown error'}, status: :unprocessable_entity
       end
     else
-      render json: {error: result}, status: :unprocessable_entity
+      render json: {error: result}, status: status_code
     end
   end
 
@@ -144,22 +145,8 @@ class ItemsController < ApplicationController
       end
       show
     else
-      render json: {error: "impossible to load changes"}, status: :unprocessable_entity
+      render json: {error: remote_file_changes}, status: status_code
     end
-    return
-
-    remote_file_changes.each do |remote_id, remote_file|
-      local_item = Item.where(:storage_id => @storage.id, :remote_id => remote_id).first
-      if (remote_file.nil? && local_item != nil)
-        local_item.destroy
-      elsif (remote_file != nil && local_item != nil)
-        local_item.update(remote_file)
-      else
-        local_item = Item.new(remote_file)
-        local_item.save
-      end
-    end
-    show
   end
 
   private
