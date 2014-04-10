@@ -6,8 +6,6 @@ one:
   password: MyString
   url: MyString
   port: 1
-  integer: 
-  : 
 
 two:
   token: MyString
@@ -15,5 +13,3 @@ two:
   password: MyString
   url: MyString
   port: 1
-  integer: 
-  : 

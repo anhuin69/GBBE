@@ -1,9 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  username: MyString
-  email: MyString
+fabrice:
+  username: Fabrice Bascoulergue
+  email: fabrice@gatherbox.com
+  encrypted_password: $2a$10$IbMbmF1JKhsEZEz8zSQYzuNyAo37cdohoeGmy0jU7TNdqc8lefSXC
+  salt: $2a$10$IbMbmF1JKhsEZEz8zSQYzu
 
-two:
-  username: MyString
-  email: MyString
+aymeric:
+  username: Aymeric Chauvin
+  email: aymeric@gatherbox.com
+  encrypted_password: $2a$10$IbMbmF1JKhsEZEz8zSQYzuNyAo37cdohoeGmy0jU7TNdqc8lefSXC
+  salt: $2a$10$IbMbmF1JKhsEZEz8zSQYzu
