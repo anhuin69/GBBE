@@ -12,16 +12,16 @@ class UsersController < ApplicationController
     if @user.save
       render json: @user, status: :created
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: {errors: @user.errors}, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /account/update
   def update
-    if @user.update(params[:user])
-      head :no_content
+    if @user.update(user_params)
+      show
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: {errors: @user.errors}, status: :unprocessable_entity
     end
   end
 
@@ -30,9 +30,9 @@ class UsersController < ApplicationController
     @user = User.authenticate_with_credentials(user_params)
 
     if (@user)
-      render json: @user.authentication_token
+      render json: {token: @user.authentication_token}
     else
-      render json: 'bad credentials', status: :not_acceptable
+      render json: {error: 'bad credentials'}, status: :not_acceptable
     end
   end
 

@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
 
   validates :email, :presence => true, :uniqueness => true, :format => /@/
   validates :username, :length => 0..255
-  validates :password, :presence => true, :length => 6..48, :on => :create
+  validates :password, :presence => true, :length => 6..48, :if => lambda{ new_record? || !password.nil? }
 
   def self.authenticate_with_token(authentication_token)
     return false
@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
   end
 
   def initialize_defaults
-    self.username = ''
+    self.username = '' if self.username.nil?
   end
 
   def encrypt_password
