@@ -2,6 +2,8 @@
 ### A generic API to connect to any kind of online storage.
 #### [Gatherbox - Frontend](https://github.com/Ephismen/GBFE)
 
+###### /!\ Unit test coming soon !
+
 ######List of online storages: 
 - Google Drive (100%)
 - Dropbox (100%)
