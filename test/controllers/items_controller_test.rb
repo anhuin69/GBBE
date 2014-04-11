@@ -1,37 +1,29 @@
 require 'test_helper'
 
 class ItemsControllerTest < ActionController::TestCase
-  #setup do
-  #  @item = items(:one)
-  #end
 
-  #test "should get index" do
-  #  get :index
-  #  assert_response :success
-  #  assert_not_nil assigns(:items)
-  #end
+  def init_token_header(user)
+    @user = users(user)
+    @request.headers['HTTP_AUTHORIZATION'] = "Token #{@user.authentication_token},#{@user.email}"
+  end
 
-  #test "should create item" do
-  #  assert_difference('Item.count') do
-  #    post :create, item: { string: @item.string }
-  #  end
-  #  assert_response 201
-  #end
+  def init_storage(storage)
+    @storage = storages(storage)
+    @controller = StoragesController.new
+    get :changes, :id => storages(storage).id
+    assert_response :ok
+    @controller = ItemsController.new
+  end
 
-  #test "should show item" do
-  #  get :show, id: @item
-  #  assert_response :success
-  #end
+  test 'Should get storage root file and children' do
+    init_token_header(:fabrice)
+    init_storage(:google_drive_fabrice)
 
-  #test "should update item" do
-  #  put :update, id: @item, item: { string: @item.string }
-  #  assert_response 204
-  #end
+    get :index, :storage_id => @storage.id
+    assert_response :ok
+    result = JSON.parse(@response.body)
+    assert_not_nil result['file']
+    assert_not_nil result['children']
+  end
 
-  #test "should destroy item" do
-  #  assert_difference('Item.count', -1) do
-  #    delete :destroy, id: @item
-  #  end
-  #  assert_response 204
-  #end
 end
