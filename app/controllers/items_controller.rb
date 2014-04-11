@@ -63,8 +63,12 @@ class ItemsController < ApplicationController
   # GET /storages/:storage_id/files
   # retrieve items of the root folder
   def index
-    @items = @storage.root.nil? ? [] : @storage.root.children
-    render json: @items
+    if @storage.root.nil?
+      render json: {}
+    else
+      @item = @storage.root
+      show
+    end
   end
 
   # GET /storages/:storage_id/files/1

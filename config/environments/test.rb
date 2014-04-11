@@ -33,4 +33,6 @@ Gatherbox::Application.configure do
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
+
+  config.secret_key_base = 'a9e46d31eff5e9799a310670cd5b9b49c39694fe9ac9c3c417a476f6e230e0980c432da9db237509866badf6048fa9622deac1eab6d5ac713b2bbde0d5ff0765'
 end

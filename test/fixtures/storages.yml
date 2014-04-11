@@ -1,15 +1,25 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  token: MyString
-  login: MyString
-  password: MyString
-  url: MyString
-  port: 1
+# Access ok
+google_drive_fabrice:
+  token: 1/qiBc3PGd7t0ReSDiZVQEZv_agBTXqJPOKvAHhMYGgKI
+  provider: google_drive
+  login: unknown
+  user_id: 1
+  id: 1
 
-two:
-  token: MyString
-  login: MyString
-  password: MyString
-  url: MyString
-  port: 1
+# Access revoked
+google_drive_aymeric:
+  token: 1/oOSsKiMM8RiCiNxNOSGVApSifncvM8H3iKAjqbijRVY
+  provider: google_drive
+  login: unknown
+  user_id: 2
+  id: 2
+
+# Access ok
+dropbox_fabrice:
+  token: zvZUnoPb0lYAAAAAAAAABP_Rii5V9cnCgQ-cf2-Ldh3ZMZw7oQRBPe92xPbnozGs
+  provider: dropbox
+  login: unknown
+  user_id: 1
+  id: 3

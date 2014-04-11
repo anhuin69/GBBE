@@ -75,7 +75,7 @@ class StoragesController < ApplicationController
     unless controller.nil? || (url = controller.get_authorization_url).nil?
       render json: {url: url}
     else
-      render json: {error: "unknown provider"}, status: :unprocessable_entity
+      render json: {error: 'unknown provider'}, status: :unprocessable_entity
     end
   end
 
@@ -105,6 +105,6 @@ class StoragesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def storage_params
-    params.require(:storage).permit(:login, :provider)
+    params.require(:storage).permit(:login, :password, :provider)
   end
 end

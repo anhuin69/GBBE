@@ -5,9 +5,13 @@ fabrice:
   email: fabrice@gatherbox.com
   encrypted_password: $2a$10$IbMbmF1JKhsEZEz8zSQYzuNyAo37cdohoeGmy0jU7TNdqc8lefSXC
   salt: $2a$10$IbMbmF1JKhsEZEz8zSQYzu
+  authentication_token: default_token
+  id: 1
 
 aymeric:
   username: Aymeric Chauvin
   email: aymeric@gatherbox.com
   encrypted_password: $2a$10$IbMbmF1JKhsEZEz8zSQYzuNyAo37cdohoeGmy0jU7TNdqc8lefSXC
   salt: $2a$10$IbMbmF1JKhsEZEz8zSQYzu
+  authentication_token: default_token
+  id: 2
