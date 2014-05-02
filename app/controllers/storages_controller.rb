@@ -1,10 +1,11 @@
 require 'api/api_controller'
 require 'api/google_drive_controller'
 require 'api/dropbox_controller'
+require 'api/sky_drive_controller'
 
 class StoragesController < ApplicationController
   before_action :authenticate
-  before_action :set_storage, only: [:show, :update, :destroy, :changes]
+  before_action :set_storage, only: [:show, :update, :destroy, :changes, :refresh_token]
 
   # GET /storages
   # return all user storages as JSON
@@ -78,6 +79,8 @@ class StoragesController < ApplicationController
       render json: {error: 'unknown provider'}, status: :unprocessable_entity
     end
   end
+
+
 
   # Callback from oauth2 providers
   def link_account

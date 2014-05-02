@@ -96,7 +96,9 @@
       <RAILS_SERVER_CONFIG_SETTINGS_ID NAME="RAILS_SERVER_TYPE" VALUE="Default" />
       <RAILS_SERVER_CONFIG_SETTINGS_ID NAME="ENVIRONMENT_TYPE" VALUE="development" />
       <RAILS_SERVER_CONFIG_SETTINGS_ID NAME="LAUNCH_JS" VALUE="false" />
+      <RunnerSettings RunnerId="RubyDebugRunner" />
       <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyDebugRunner" />
       <ConfigurationWrapper RunnerId="RubyRunner" />
       <method />
     </configuration>
@@ -159,8 +161,10 @@
     <orderEntry type="library" scope="PROVIDED" name="mime-types (v1.25.1, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="minitest (v4.7.5, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="multi_json (v1.9.2, ruby-2.0.0-p451) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="multi_xml (v0.5.5, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="multipart-post (v1.2.0, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mysql2 (v0.3.15, ruby-2.0.0-p451) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="oauth2 (v0.9.3, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="polyglot (v0.3.4, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rack (v1.5.2, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rack-test (v0.6.2, ruby-2.0.0-p451) [gem]" level="application" />
@@ -168,6 +172,7 @@
     <orderEntry type="library" scope="PROVIDED" name="rails-api (v0.2.0, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="railties (v4.0.4, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rake (v10.1.1, ruby-2.0.0-p451) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rest-client (v1.6.7, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="signet (v0.4.5, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sprockets (v2.12.0, ruby-2.0.0-p451) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sprockets-rails (v2.0.1, ruby-2.0.0-p451) [gem]" level="application" />

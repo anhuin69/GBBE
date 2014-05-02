@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140403152110) do
+ActiveRecord::Schema.define(version: 20140429155756) do
 
   create_table "items", force: true do |t|
     t.integer  "storage_id"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 20140403152110) do
   create_table "storages", force: true do |t|
     t.integer  "user_id"
     t.string   "provider"
-    t.string   "token"
+    t.string   "token",             limit: 1024
     t.string   "login"
     t.string   "password"
     t.string   "url"

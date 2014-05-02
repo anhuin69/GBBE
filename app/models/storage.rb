@@ -14,7 +14,7 @@ class Storage < ActiveRecord::Base
   end
 
   def as_json(options)
-    super(:only => [:id, :provider, :login, :quota_bytes_total, :quota_bytes_used, :picture_url, :etag])
+    super(:only => [:id, :provider, :login, :quota_bytes_total, :quota_bytes_used, :picture_url, :etag, :uid])
   end
 
 end

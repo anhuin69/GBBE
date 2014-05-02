@@ -12,8 +12,10 @@ gem 'bcrypt-ruby', :require => 'bcrypt'
 
 gem 'mime-types'
 
+gem 'oauth2'
 gem 'google-api-client'
 gem 'dropbox-sdk'
+gem 'rest-client'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

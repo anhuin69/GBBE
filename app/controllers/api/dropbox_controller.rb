@@ -78,12 +78,12 @@ class DropboxController < ApiController
       result[api_result['path']] = api_result['is_deleted'] ? nil : file_resource(api_result)
 
       unless (api_result['contents'].nil?)
-        api_result['contents'].each do |sub_file|
-          if (sub_file['is_deleted'])
-            result[sub_file['path']] = nil
+        api_result['contents'].each do |child|
+          if (child['is_deleted'])
+            result[child['path']] = nil
           else
-            result[sub_file['path']] = file_resource(sub_file)
-            result[sub_file['path']][:parent_remote_id] = api_result['path']
+            result[child['path']] = file_resource(child)
+            result[child['path']][:parent_remote_id] = api_result['path']
           end
         end
       end
@@ -170,7 +170,7 @@ class DropboxController < ApiController
     end
   end
 
-  def create_folder(title, parent_remote_id)
+  def create_folder(title, description, parent_remote_id)
     begin
       api_result = @client.file_create_folder(parent_remote_id + '/' + title)
       return 200, file_resource(api_result)

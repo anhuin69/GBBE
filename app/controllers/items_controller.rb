@@ -1,6 +1,7 @@
 require 'api/api_controller'
 require 'api/google_drive_controller'
 require 'api/dropbox_controller'
+require 'api/sky_drive_controller'
 
 class ItemsController < ApplicationController
   before_action :authenticate
@@ -111,7 +112,7 @@ class ItemsController < ApplicationController
   # if the post parameter copy_title is not specified the
   # copied item title is used
   # duplicate the file
-  # TODO: maybe accept another parent_remote_id
+  # TODO: maybe accept another parent_remote_id (need for skydrive)
   def copy
     controller = ApiController.get_controller(@storage)
     status_code, result = controller.copy(@item.remote_id, @item.parent_remote_id, (params.key?(:copy_title) ? params[:copy_title] : @item.title + ' - copy'))
