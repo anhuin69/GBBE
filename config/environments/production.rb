@@ -89,7 +89,7 @@ Gatherbox::Application.configure do
       :ID => '1021604253204-pnan8jcg09cdng7gnt7s7hd551v9c1q1.apps.googleusercontent.com',
       :SECRET => 'LzAmlTl5sPca211GpgY9XIsv',
       :OAUTH_SCOPE => 'https://www.googleapis.com/auth/drive', #, 'https://www.googleapis.com/auth/userinfo.email']
-      :REDIRECT_URI => 'http://gbbe.herokuapp.com/storages/link_account/google_drive',
+      :REDIRECT_URI => 'https://gbbe.herokuapp.com/storages/link_account/google_drive',
       :ROOT => 'root',
       :CLASS => 'GoogleDriveController'
   }
@@ -99,7 +99,7 @@ Gatherbox::Application.configure do
       :PROVIDER => 'dropbox',
       :ID => 'v3hc20relbafs8p',
       :SECRET => 'dhi1301p0ojj1sr',
-      :REDIRECT_URI => 'http://gbbe.herokuapp.com/storages/link_account/dropbox',
+      :REDIRECT_URI => 'https://gbbe.herokuapp.com/storages/link_account/dropbox',
       :ROOT => '/',
       :CLASS => 'DropboxController'
   }
@@ -112,7 +112,7 @@ Gatherbox::Application.configure do
       :ID => '000000004411A527',
       :SECRET => '9QPOzh8Rn9F4A0wckFcQnuolINFxRxEa',
       :OAUTH_SCOPE => 'wl.skydrive wl.skydrive_update wl.offline_access',
-      :REDIRECT_URI => 'http://gbbe.herokuapp.com/storages/link_account/skydrive',
+      :REDIRECT_URI => 'https://gbbe.herokuapp.com/storages/link_account/skydrive',
       :CLASS => 'SkyDriveController'
   }
 end
