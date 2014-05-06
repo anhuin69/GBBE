@@ -157,11 +157,21 @@ class SkyDriveController < ApiController
     end
   end
 
-  #TODO PUT verb is probably bugged - replace PUT by POST
+  #TODO: find a way to fix it without renaming the temp file
   def upload_file(parent_remote_id, title, mime_type, file_path)
-    puts "UPLOADING '#{title}' to #{parent_remote_id} with mimetype '#{mime_type}' and path '#{file_path}' or size #{File.size(file_path)}"
+    new_file_path = File.join(File.dirname(file_path), title)
+    FileUtils.cp(file_path, new_file_path)
     begin
-      response = @client["#{parent_remote_id}/files/#{title}"].put(File.read(file_path), {:authorization => "Bearer #{@access_token}", :content_type => '', 'Content-Length' => File.size(file_path)})
+      request = RestClient::Request.new(
+          :method => :post,
+          :url => "https://apis.live.net/v5.0/me/skydrive/files?access_token=#{@access_token}",
+          :payload => {
+              :multipart => true,
+              :file => File.open(new_file_path, 'rb')
+      })
+      response = request.execute
+
+      #response = @client["#{parent_remote_id}/files/#{title}"].put(IO.read(file_path), {:authorization => "Bearer #{@access_token}", :content_type => ''})
       json_response = JSON.parse(response)
       puts json_response
       return 200, file_resource(json_response)
