@@ -7,6 +7,7 @@ gem 'rails-api'
 
 # Use mysql2 as the database for Active Record
 gem 'mysql2'
+gem 'pg'
 
 gem 'bcrypt-ruby', :require => 'bcrypt'
 

@@ -28,7 +28,7 @@ test:
 
 production:
   host: localhost
-  adapter: mysql2
+  adapter: postgresql
   encoding: utf8
   database: gatherbox_prod
   pool: 5
