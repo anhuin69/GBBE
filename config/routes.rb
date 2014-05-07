@@ -12,7 +12,7 @@ Gatherbox::Application.routes.draw do
   get 'storages/link_account/:format', to: 'storages#link_account'
   resources :storages, except: :edit do
     # Files routes
-    match 'files', to: 'items#index', via: [:options]
+    match '*files', to: 'items#index', via: [:options]
     resources :items, path: 'files', except: :edit
     get 'files/:id/changes', to: 'items#changes'
     post 'files/:id/copy', to: 'items#copy'
