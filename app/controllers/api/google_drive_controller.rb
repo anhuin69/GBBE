@@ -191,11 +191,14 @@ class GoogleDriveController < ApiController
 
   # Convert a google drive file resource to unified hash values
   def file_resource(data)
+    mime_type = data.mimeType unless (data['mimeType'].nil?)
+    mime_type = 'folder' if (mime_type.nil? || mime_type.end_with?('folder'))
+
     result = Hash.new
     result[:remote_id] = data.id
     result[:remote_link] = data.downloadUrl unless (data['downloadUrl'].nil?)
     result[:title] = data.title unless (data['title'].nil?)
-    result[:mimeType] = data.mimeType unless (data['mimeType'].nil?)
+    result[:mimeType] = mime_type
     result[:description] = data.description unless (data['description'].nil?)
     result[:createdDate] = data.createdDate unless (data['createdDate'].nil?)
     result[:modifiedDate] = data.modifiedDate unless (data['modifiedDate'].nil?)

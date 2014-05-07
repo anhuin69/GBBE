@@ -182,10 +182,17 @@ class SkyDriveController < ApiController
 
   #TODO transform type into mimetype
   def file_resource(data)
+    mime_type = MIME::Types.type_for(data['name']).first
+    if (mime_type.nil?)
+      mime_type = 'folder'
+    else
+      mime_type = mime_type.content_type
+    end
+
     result = Hash.new
     result[:remote_id] = data['id']
     result[:parent_remote_id] = data['parent_id']
-    result[:mimeType] = data['type']
+    result[:mimeType] = mime_type
     result[:fileSize] = data['size']
     result[:createdDate] = data['created_time']
     result[:modifiedDate] = data['updated_time']

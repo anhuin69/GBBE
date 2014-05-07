@@ -204,7 +204,7 @@ class DropboxController < ApiController
   def file_resource(data)
     result = Hash.new
     result[:remote_id] = data['path']
-    result[:mimeType] = data['is_dir'] ? 'application/folder' : data['mime_type']
+    result[:mimeType] = data['is_dir'] ? 'folder' : data['mime_type']
     result[:fileSize] = data['bytes']
     result[:modifiedDate] = data['modified']
     result[:title] = data['path'] == '/' ? '/' : data['path'].split('/').last
