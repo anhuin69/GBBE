@@ -1,11 +1,12 @@
 class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Token::ControllerMethods
-  before_filter :set_access_control_headers
+  before_filter :cors_set_access_control_headers
 
-  def set_access_control_headers
+  def cors_set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD'
-    headers['Access-Control-Allow-Headers'] = '*'
+    headers['Access-Control-Allow-Headers'] = 'authorization'
+    head(:ok) if request.request_method == 'OPTIONS'
   end
 
   protected

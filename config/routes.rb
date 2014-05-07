@@ -5,15 +5,20 @@ Gatherbox::Application.routes.draw do
   put '/account/update' => 'users#update'
   post '/account/token' => 'users#token'
 
+  match 'storages', to: 'storages#index', via: [:options]
   get 'storages/:id/changes', to: 'storages#changes'
   get 'storages/link_account/:format', to: 'storages#link_account'
   resources :storages, except: :edit do
     # Files routes
+    match 'files', to: 'items#index', via: [:options]
     resources :items, path: 'files', except: :edit
     get 'files/:id/changes', to: 'items#changes'
     post 'files/:id/copy', to: 'items#copy'
     post 'files/upload', to: 'items#upload'
   end
+
+  get '/storages', to: 'storages#index', ia: [:options, :get]
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
