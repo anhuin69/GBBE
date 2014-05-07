@@ -1,11 +1,13 @@
 Gatherbox::Application.routes.draw do
 
+  match '*account' => 'users#show', via: [:options]
+
   post '/account/create' => 'users#create'
   get '/account/info' => 'users#show'
   put '/account/update' => 'users#update'
   post '/account/token' => 'users#token'
 
-  match 'storages', to: 'storages#index', via: [:options]
+  match '*storages', to: 'storages#index', via: [:options]
   get 'storages/:id/changes', to: 'storages#changes'
   get 'storages/link_account/:format', to: 'storages#link_account'
   resources :storages, except: :edit do
